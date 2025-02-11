@@ -16,7 +16,7 @@ const deleteProjectService = async (id: string) => {
     return results;
 };
 
-const updateProjectByIdService = async (userId, data) => {
+const updateProjectByIdService = async (userId: string, data: TProject) => {
     const result = await Project.updateOne(
         { _id: userId },
         data,
