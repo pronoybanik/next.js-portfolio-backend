@@ -1,8 +1,14 @@
 import express from 'express';
 import cors from 'cors';
 import mongoose from 'mongoose';
-import { Server } from 'http';
 import config from './config';
+import { Server } from 'http';
+
+
+// Import router using named import
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const projectRoute = require('./modules/projects/project.route');  // Adjust path as necessary
+
 
 const app = express();
 
@@ -11,11 +17,11 @@ app.use(express.json());
 app.use(cors());
 
 // Application routes
-// app.use('/api/v1', router);
+app.use('/api/project', projectRoute);  
 
 app.get('/', (req, res) => {
   res.status(200).json({
-    message: 'welcome to the server 5000',
+    message: 'Welcome to the portfolio server 5000',
   });
 });
 
@@ -35,7 +41,7 @@ async function main() {
 main();
 
 process.on('unhandledRejection', () => {
-  console.log(`😈 unhandledRejection is detected , shutting down ...`);
+  console.log(`😈 unhandledRejection detected, shutting down...`);
   if (server) {
     server.close(() => {
       process.exit(1);
@@ -45,7 +51,7 @@ process.on('unhandledRejection', () => {
 });
 
 process.on('uncaughtException', () => {
-  console.log(`😈 uncaughtException is detected , shutting down ...`);
+  console.log(`😈 uncaughtException detected, shutting down...`);
   process.exit(1);
 });
 
