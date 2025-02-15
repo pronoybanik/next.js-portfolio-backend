@@ -16,8 +16,6 @@ const blogRoutes = require('./modules/blogs/blog.route');
 const contactRoutes = require('./modules/contact/contact.route');
 
 
-
-
 // Parsers
 app.use(express.json());
 app.use(cors());
