@@ -1,23 +1,32 @@
+/* eslint-disable @typescript-eslint/no-require-imports */
 import express from 'express';
 import cors from 'cors';
 import mongoose from 'mongoose';
 import config from './config';
 import { Server } from 'http';
-
+import dotenv from "dotenv";
+dotenv.config();
+const app = express();
 
 // Import router using named import
 // eslint-disable-next-line @typescript-eslint/no-require-imports
-const projectRoute = require('./modules/projects/project.route');  // Adjust path as necessary
+const projectRoute = require('./modules/projects/project.route');
+const authRoutes = require('./modules/users/user.route');
+const blogRoutes = require('./modules/blogs/blog.route');
+const contactRoutes = require('./modules/contact/contact.route');
 
 
-const app = express();
+
 
 // Parsers
 app.use(express.json());
 app.use(cors());
 
 // Application routes
-app.use('/api/project', projectRoute);  
+app.use('/api/project', projectRoute);
+app.use("/api/auth", authRoutes);
+app.use("/api/blogs", blogRoutes);
+app.use("/api/contact", contactRoutes);
 
 app.get('/', (req, res) => {
   res.status(200).json({

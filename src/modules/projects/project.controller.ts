@@ -1,106 +1,100 @@
+import { Request, Response, NextFunction } from "express";
 import { projectService } from "./project.service";
 
-const createProject = async (req, res, next) => {
+const createProject = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
         const result = await projectService.createProjectService(req.body);
-        res.status(200).json({
+        res.status(201).json({
             status: "success",
-            message: "create new project successfully!",
+            message: "Created new project successfully!",
             data: result
         });
     } catch (error) {
-        res.status(400).json({
-            status: "fail",
-            message: " Data is not inserted ",
-            error: error.message,
-        });
+        next(error);
     }
 };
 
-const getProject = async (req, res, next) => {
+const getProject = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-        const product = await projectService.getProjectService();
+        const projects = await projectService.getProjectService();
 
-        if (!product) {
-            return res.status(400).json({
+        if (!projects || projects.length === 0) {
+            res.status(404).json({
                 status: "fail",
-                error: "Couldn't find a brand with this id"
-            })
+                error: "No projects found"
+            });
+            return;
         }
 
         res.status(200).json({
             status: "success",
-            message: "Get all project data",
-            data: product,
+            message: "Fetched all project data",
+            data: projects,
         });
     } catch (error) {
-        console.log(error);
-        res.status(400).json({
-            status: "fail",
-            message: "Couldn't get the brands",
-            error: error.message
-        });
+        next(error);
     }
 };
 
-
-
-const updateProject = async (req, res, next) => {
+const updateProject = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-        const { id } = req.params
-        const product = await projectService.updateProjectByIdService( id, req.body);
+        const { id } = req.params;
+        if (!id) {
+            res.status(400).json({ status: "fail", error: "Project ID is required" });
+            return;
+        }
 
-        if (!product) {
-            return res.status(400).json({
+        const project = await projectService.updateProjectByIdService(id, req.body);
+
+        if (!project) {
+            res.status(404).json({
                 status: "fail",
-                error: "Couldn't delete project product"
-            })
+                error: "Couldn't update project, project not found"
+            });
+            return;
         }
 
         res.status(200).json({
             status: "success",
-            message: "update project",
-            data: product,
+            message: "Project updated successfully",
+            data: project,
         });
     } catch (error) {
-        console.log(error);
-        res.status(400).json({
-            status: "fail",
-            message: "Couldn't get the brands",
-            error: error.message
-        });
+        next(error);
     }
 };
 
-const deleteProject = async (req, res, next) => {
+const deleteProject = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-        const { id } = req.params
-        const product = await projectService.deleteProjectService(id);
+        const { id } = req.params;
+        if (!id) {
+            res.status(400).json({ status: "fail", error: "Project ID is required" });
+            return;
+        }
 
-        if (!product) {
-            return res.status(400).json({
+        const project = await projectService.deleteProjectService(id);
+
+        if (!project) {
+            res.status(404).json({
                 status: "fail",
-                error: "Couldn't delete project product"
-            })
+                error: "Couldn't delete project, project not found"
+            });
+            return;
         }
 
         res.status(200).json({
             status: "success",
-            data: product,
+            message: "Project deleted successfully",
+            data: project,
         });
     } catch (error) {
-        console.log(error);
-        res.status(400).json({
-            status: "fail",
-            message: "Couldn't get the brands",
-            error: error.message
-        });
+        next(error);
     }
 };
 
 export const projectController = {
     createProject,
     getProject,
-    deleteProject,
-    updateProject
-}
+    updateProject,
+    deleteProject
+};
