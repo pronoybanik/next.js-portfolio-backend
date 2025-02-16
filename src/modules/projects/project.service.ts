@@ -27,9 +27,15 @@ const updateProjectByIdService = async (userId: string, data: TProject) => {
     return result;
 };
 
+const singleProjectService = async (id: string) => {
+    const results = await Project.findById({ _id: id })
+    return results;
+};
+
 export const projectService = {
     createProjectService,
     getProjectService,
     deleteProjectService,
     updateProjectByIdService,
+    singleProjectService
 }

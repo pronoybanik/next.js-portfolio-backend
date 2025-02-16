@@ -5,6 +5,7 @@ const router = express.Router();
 
 router.route('/').get(projectController.getProject)
 router.route("/").post(projectController.createProject)
+router.route("/:id").get(projectController.singleProject)
 router.route('/:id').patch(projectController.updateProject)
 router.route('/:id').delete(projectController.deleteProject)
 

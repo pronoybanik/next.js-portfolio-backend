@@ -42,7 +42,7 @@ export const loginUser = async (req: Request, res: Response, next: NextFunction)
             return;
         }
 
-        const token = jwt.sign({ id: user._id }, process.env.JWT_ACCESS_SECRET as string, { expiresIn: "1d" });
+        const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_ACCESS_SECRET as string, { expiresIn: "1d" });
 
         res.status(200).json({ message: "Login successful", token });
     } catch (error) {
