@@ -44,23 +44,32 @@ export const singleBlogs = async (req: Request, res: Response) => {
 };
 
 
-// export const singleBlogs = async (req: Request, res: Response): Promise<Response> => {
-//     try {
-//         const { id } = req.params;
 
-//         if (!id) {
-//             return res.status(400).json({ message: "Blog ID is required" });
-//         }
+export const updateBlog = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+        const { id } = req.params;
 
-//         const blog = await Blogs.findById(id);
+        if (!id) {
+            res.status(400).json({ status: "fail", error: "Blog ID is required" });
+            return;
+        }
 
-//         if (!blog) {
-//             return res.status(404).json({ message: "Blog not found" });
-//         }
+        const blog = await Blogs.findByIdAndUpdate(id, req.body, { new: true, runValidators: true });
 
-//         return res.status(200).json({ message: "Single blog retrieved successfully", data: blog });
-//     } catch (error) {
-//         console.error("Error fetching blog:", error);
-//         return res.status(500).json({ message: "Internal Server Error" });
-//     }
-// };
+        if (!blog) {
+            res.status(404).json({
+                status: "fail",
+                error: "Couldn't update blog, blog not found"
+            });
+            return;
+        }
+
+        res.status(200).json({
+            status: "success",
+            message: "Blog updated successfully",
+            data: blog,
+        });
+    } catch (error) {
+        next(error);
+    }
+};

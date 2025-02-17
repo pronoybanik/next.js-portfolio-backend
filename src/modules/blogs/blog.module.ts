@@ -7,7 +7,7 @@ const BlogSchema = new Schema<IBlog>({
     author: { type: String, required: true },
     category: {
         type: String,
-        enum: ['Technology', 'Health', 'Lifestyle', 'Business'], // Example categories
+        enum: ['Technology', 'Health', 'Lifestyle', 'Business', "Portfolio"], // Example categories
         required: true,
     },
     image: String

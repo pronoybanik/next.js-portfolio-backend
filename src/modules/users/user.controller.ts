@@ -49,3 +49,19 @@ export const loginUser = async (req: Request, res: Response, next: NextFunction)
         next(error);
     }
 };
+
+export const singleUser = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+        const { id } = req.params;
+
+        const user = await User.findById(id);
+        if (!user) {
+            res.status(400).json({ message: "Invalid credentials" });
+            return;
+        }
+
+        res.status(200).json({ message: "Got User Info Data", data: user });
+    } catch (error) {
+        next(error);
+    }
+};
