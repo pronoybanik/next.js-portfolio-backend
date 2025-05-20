@@ -8,8 +8,7 @@ const ContactSchema = new Schema<IContact>({
     email: { type: String, required: true },
     phone: { type: Number, required: true },
     category: {
-        type: String,
-        enum: ['Technology', 'Health', 'Lifestyle', 'Business'], // Example categories
+        type: String, 
         required: true,
     },
     message: { type: String, required: true },

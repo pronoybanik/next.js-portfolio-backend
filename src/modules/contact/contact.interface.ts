@@ -5,7 +5,7 @@ export interface IContact extends Document {
     lastName: string;
     email: string;
     phone: number;
-    category: 'Technology' | 'Health' | 'Lifestyle' | 'Business'
+    category: string
     message: string;
 }
 
