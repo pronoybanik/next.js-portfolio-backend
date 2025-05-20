@@ -1,9 +1,10 @@
 
+/* eslint-disable no-unused-vars */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+
 import { Request, Response } from 'express';
 import { Contact } from './contact.module';
 import { createTransporter, generateMailOptions } from './emailSender';
-
-
 
 // Create a new contact
 export const createContact = async (req: Request, res: Response) => {
@@ -39,7 +40,7 @@ export const createContact = async (req: Request, res: Response) => {
 };
 
 // Get all contacts
-export const getContact = async (_req: Request, res: Response) => {
+export const getContact = async (req: Request, res: Response) => {
   try {
     const contacts = await Contact.find();
     res.status(200).json({
@@ -57,28 +58,13 @@ export const getContact = async (_req: Request, res: Response) => {
 };
 
 // Delete a contact by ID
+
 export const deleteContact = async (req: Request, res: Response) => {
-  try {
-    const { id } = req.params;
-    const deletedContact = await Contact.findByIdAndDelete(id);
-
-    if (!deletedContact) {
-      return res.status(404).json({
-        success: false,
-        message: 'Contact not found',
-      });
+    try {
+        const { id } = req.params;
+        const contact = await Contact.findByIdAndDelete(id);
+        res.status(201).json({ message: "Blog deleted successfully", data: contact });
+    } catch (error) {
+        res.status(500).json({ message: "Internal Server Error" });
     }
-
-    res.status(200).json({
-      success: true,
-      message: 'Contact deleted successfully',
-      data: deletedContact,
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: 'Internal Server Error',
-      error: error instanceof Error ? error.message : error,
-    });
-  }
 };
