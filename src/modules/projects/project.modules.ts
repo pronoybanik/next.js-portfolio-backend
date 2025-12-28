@@ -33,6 +33,6 @@ const projectSchema = new Schema({
 }, { timestamps: true });
 
 
-const Project = mongoose.model<TProject>('Content', projectSchema);
+const Project = mongoose.model<TProject>('Project', projectSchema);
 
 export default Project;
