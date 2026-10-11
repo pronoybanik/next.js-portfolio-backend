@@ -1,45 +1,45 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { NextFunction, Request, Response } from "express";
-import { Blogs } from "./blog.module";
+import { NextFunction, Request, Response } from 'express';
+import { createBlogService, deleteBlogService, getBlogByIdService, getBlogsService, updateBlogService } from './blog.service';
 
-export const createBlog = async (req: Request, res: Response) => {
+export const createBlog = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const blog = await Blogs.create(req.body);
+        const blog = await createBlogService(req.body);
         res.status(201).json({ message: "Blog created", blog });
     } catch (error) {
-        console.error("Error creating blog:", error);
-        res.status(500).json({ message: "Internal Server Error" });
+        next(error);
     }
 };
 
-export const getBlogs = async (req: Request, res: Response) => {
+export const getBlogs = async (_req: Request, res: Response, next: NextFunction) => {
     try {
-        const blogs = await Blogs.find();
+        const blogs = await getBlogsService();
         res.json({ message: "Get All Blogs", data: blogs });
     } catch (error) {
-        console.error("Error fetching blogs:", error);
-        res.status(500).json({ message: "Internal Server Error" });
+        next(error);
     }
 };
 
-export const deleteBlogs = async (req: Request, res: Response) => {
+export const deleteBlogs = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { id } = req.params;
-        const contact = await Blogs.findByIdAndDelete(id);
-        res.status(201).json({ message: "Blog deleted successfully", data: contact });
+        const blog = await deleteBlogService(id);
+        if (!blog) { res.status(404).json({ message: 'Blog not found' }); return; }
+        res.status(200).json({ message: "Blog deleted successfully", data: blog });
     } catch (error) {
-        res.status(500).json({ message: "Internal Server Error" });
+        next(error);
     }
 };
 
-export const singleBlogs = async (req: Request, res: Response) => {
+export const singleBlogs = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { id } = req.params;
-        const contact = await Blogs.findById(id);
-        res.status(201).json({ message: "Single blog retrieved successfully", data: contact });
+        const blog = await getBlogByIdService(id);
+        if (!blog) { res.status(404).json({ message: 'Blog not found' }); return; }
+        res.status(200).json({ message: "Single blog retrieved successfully", data: blog });
     } catch (error) {
-        res.status(500).json({ message: "Internal Server Error" });
+        next(error);
     }
 };
 
@@ -54,7 +54,7 @@ export const updateBlog = async (req: Request, res: Response, next: NextFunction
             return;
         }
 
-        const blog = await Blogs.findByIdAndUpdate(id, req.body, { new: true, runValidators: true });
+        const blog = await updateBlogService(id, req.body);
 
         if (!blog) {
             res.status(404).json({

@@ -6,4 +6,4 @@ router.post("/", createContact);
 router.get("/", getContact);
 router.delete("/:id", deleteContact);
 
-module.exports= router;
+export default router;

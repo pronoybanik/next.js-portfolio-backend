@@ -9,4 +9,4 @@ router.delete("/:id", deleteBlogs);
 router.get("/:id", singleBlogs);
 router.patch("/:id", updateBlog);
 
-module.exports = router;
+export default router;

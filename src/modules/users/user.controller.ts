@@ -1,25 +1,18 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { NextFunction, Request, Response } from "express";
-import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
-import { User } from "./user.module";
+import { authenticateUser, getUserById, registerUser } from './user.service';
 
 
 export const createUser = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
         const { name, email, password } = req.body;
-
-        const existingUser = await User.findOne({ email });
-        if (existingUser) {
-            res.status(400).json({ message: "User already exists" });
+        if (![name, email, password].every((value) => typeof value === 'string' && value.trim())) {
+            res.status(400).json({ message: 'Name, email, and password are required' });
             return;
         }
-
-        const hashedPassword = await bcrypt.hash(password, 10);
-        const user = await User.create({ name, email, password: hashedPassword });
-
-        res.status(201).json({ message: "User registered successfully", user });
+        const user = await registerUser({ name, email, password });
+        res.status(201).json({ message: 'User registered successfully', user: { id: user.id, name: user.name, email: user.email, role: user.role } });
     } catch (error) {
         next(error); // Pass error to Express error handler
     }
@@ -29,22 +22,16 @@ export const createUser = async (req: Request, res: Response, next: NextFunction
 export const loginUser = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
         const { email, password } = req.body;
-
-        const user = await User.findOne({ email });
-        if (!user) {
-            res.status(400).json({ message: "Invalid credentials" });
+        if (typeof email !== 'string' || typeof password !== 'string') {
+            res.status(400).json({ message: 'Email and password are required' });
             return;
         }
-
-        const isMatch = await bcrypt.compare(password, user.password);
-        if (!isMatch) {
-            res.status(400).json({ message: "Invalid credentials" });
+        const result = await authenticateUser(email, password);
+        if (!result) {
+            res.status(401).json({ message: 'Invalid credentials' });
             return;
         }
-
-        const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_ACCESS_SECRET as string, { expiresIn: "1d" });
-
-        res.status(200).json({ message: "Login successful", token });
+        res.status(200).json({ message: 'Login successful', token: result.token });
     } catch (error) {
         next(error);
     }
@@ -54,9 +41,9 @@ export const singleUser = async (req: Request, res: Response, next: NextFunction
     try {
         const { id } = req.params;
 
-        const user = await User.findById(id);
+        const user = await getUserById(id);
         if (!user) {
-            res.status(400).json({ message: "Invalid credentials" });
+            res.status(404).json({ message: 'User not found' });
             return;
         }
 

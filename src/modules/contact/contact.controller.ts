@@ -2,27 +2,13 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
-import { Request, Response } from 'express';
-import { Contact } from './contact.module';
-import { createTransporter, generateMailOptions } from './emailSender';
+import { NextFunction, Request, Response } from 'express';
+import { createContactService, deleteContactService, getContactsService } from './contact.service';
 
 // Create a new contact
-export const createContact = async (req: Request, res: Response) => {
+export const createContact = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { firstName, lastName, email, phone, category, message } = req.body;
-
-    const transporter = createTransporter();
-    const mailOptions = generateMailOptions({
-      firstName,
-      lastName,
-      email,
-      phone,
-      category,
-      message,
-    });
-
-    await transporter.sendMail(mailOptions);
-    const contact = await Contact.create(req.body);
+    const contact = await createContactService(req.body);
 
     res.status(201).json({
       success: true,
@@ -30,41 +16,32 @@ export const createContact = async (req: Request, res: Response) => {
       data: contact,
     });
   } catch (error) {
-    console.error('Email send failed:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to send email or save contact',
-      error: error instanceof Error ? error.message : error,
-    });
+    next(error);
   }
 };
 
 // Get all contacts
-export const getContact = async (req: Request, res: Response) => {
+export const getContact = async (_req: Request, res: Response, next: NextFunction) => {
   try {
-    const contacts = await Contact.find();
+    const contacts = await getContactsService();
     res.status(200).json({
       success: true,
       message: 'Contacts retrieved successfully',
       data: contacts,
     });
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: 'Internal Server Error',
-      error: error instanceof Error ? error.message : error,
-    });
+    next(error);
   }
 };
 
 // Delete a contact by ID
 
-export const deleteContact = async (req: Request, res: Response) => {
+export const deleteContact = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { id } = req.params;
-        const contact = await Contact.findByIdAndDelete(id);
-        res.status(201).json({ message: "Blog deleted successfully", data: contact });
-    } catch (error) {
-        res.status(500).json({ message: "Internal Server Error" });
+        const contact = await deleteContactService(id);
+        if (!contact) { res.status(404).json({ message: 'Contact not found' }); return; }
+        res.status(200).json({ message: "Contact deleted successfully", data: contact });
+    } catch (error) { next(error);
     }
 };

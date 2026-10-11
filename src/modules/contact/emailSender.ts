@@ -22,7 +22,7 @@ export const generateMailOptions = ({
   firstName: string;
   lastName: string;
   email: string;
-  phone: number;
+  phone: number | string;
   category: string;
   message: string;
 }) => ({

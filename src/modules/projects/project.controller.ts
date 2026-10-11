@@ -77,7 +77,7 @@ const deleteProject = async (req: Request, res: Response, next: NextFunction): P
         if (!project) {
             res.status(404).json({
                 status: "fail",
-                error: "Couldn't delete project, project not found"
+                error: "Project not found"
             });
             return;
         }
@@ -105,14 +105,14 @@ const singleProject = async (req: Request, res: Response, next: NextFunction): P
         if (!project) {
             res.status(404).json({
                 status: "fail",
-                error: "Couldn't delete project, project not found"
+                error: "Project not found"
             });
             return;
         }
 
         res.status(200).json({
             status: "success",
-            message: "Project deleted successfully",
+            message: "Project retrieved successfully",
             data: project,
         });
     } catch (error) {

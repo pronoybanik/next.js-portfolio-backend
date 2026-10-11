@@ -9,4 +9,4 @@ router.route("/:id").get(projectController.singleProject)
 router.route('/:id').patch(projectController.updateProject)
 router.route('/:id').delete(projectController.deleteProject)
 
-module.exports = router;
+export default router;
