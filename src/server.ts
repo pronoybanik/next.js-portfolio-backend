@@ -1,5 +1,6 @@
 import express from 'express';
 import cors from 'cors';
+import dns from 'node:dns';
 import mongoose from 'mongoose';
 import config from './config';
 import projectRoute from './modules/projects/project.route';
@@ -22,6 +23,10 @@ app.get('/', (_req, res) => {
 
 export async function startServer() {
   try {
+    if (config.mongodb_dns_servers.length > 0) {
+      dns.setServers(config.mongodb_dns_servers);
+    }
+
     await mongoose.connect(config.dataBase_url, {
       serverSelectionTimeoutMS: 15000,
       bufferCommands: false,

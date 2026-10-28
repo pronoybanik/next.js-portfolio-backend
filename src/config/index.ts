@@ -10,10 +10,16 @@ if (!dataBaseUrl) {
   );
 }
 
+const mongodbDnsServers = (process.env.MONGODB_DNS_SERVERS || '')
+  .split(',')
+  .map((server) => server.trim())
+  .filter(Boolean);
+
 export default {
   NODE_ENV: process.env.NODE_ENV,
   port: Number(process.env.PORT) || 5000,
   dataBase_url: dataBaseUrl,
+  mongodb_dns_servers: mongodbDnsServers,
   jwt_access_secret: process.env.JWT_ACCESS_SECRET,
   jwt_access_expires_in: process.env.JWT_ACCESS_EXPIRES_IN || '1d',
   jwt_refresh_expires_in: process.env.JWT_REFRESH_EXPIRES_IN || '7d',
