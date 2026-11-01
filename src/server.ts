@@ -12,17 +12,19 @@ import portfolioRoutes from './modules/portfolio/portfolio.route';
 const app = express();
 
 app.use(express.json());
-app.use(cors());
+// app.use(cors());
 
-// app.use(
-//   cors({
-//     origin: [
-//       "http://localhost:3000",
-//       "http://localhost:3001",
-//     ],
-//     credentials: true,
-//   })
-// );
+app.use(
+  cors({
+    origin: [
+      "http://localhost:3000",
+      "http://localhost:3001",
+      "https://www.pronoybanik.me",
+      "https://nextjs-portfolio-dashboard.vercel.app"
+    ],
+    credentials: true,
+  })
+);
 
 app.use('/api/project', projectRoute);
 app.use('/api/auth', authRoutes);
