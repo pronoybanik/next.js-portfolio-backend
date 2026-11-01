@@ -12,7 +12,6 @@ import portfolioRoutes from './modules/portfolio/portfolio.route';
 const app = express();
 
 app.use(express.json());
-// app.use(cors());
 
 app.use(
   cors({
@@ -26,6 +25,41 @@ app.use(
   })
 );
 
+let databaseConnection: Promise<typeof mongoose> | null = null;
+
+const connectDatabase = async (): Promise<typeof mongoose> => {
+  if (mongoose.connection.readyState === 1) {
+    return mongoose;
+  }
+
+  if (!databaseConnection) {
+    databaseConnection = mongoose
+      .connect(config.dataBase_url, {
+        maxPoolSize: 10,
+        serverSelectionTimeoutMS: 5000,
+        connectTimeoutMS: 5000,
+        bufferCommands: false,
+      })
+      .catch((error) => {
+        databaseConnection = null;
+        throw error;
+      });
+  }
+
+  return databaseConnection;
+};
+
+if (process.env.VERCEL) {
+  app.use(async (_req, _res, next) => {
+    try {
+      await connectDatabase();
+      next();
+    } catch (error) {
+      next(error);
+    }
+  });
+}
+
 app.use('/api/project', projectRoute);
 app.use('/api/auth', authRoutes);
 app.use('/api/blogs', blogRoutes);
@@ -38,14 +72,11 @@ app.get('/', (_req, res) => {
 
 export async function startServer() {
   try {
-    if (config.mongodb_dns_servers.length > 0) {
+    if (!process.env.VERCEL && config.mongodb_dns_servers.length > 0) {
       dns.setServers(config.mongodb_dns_servers);
     }
 
-    await mongoose.connect(config.dataBase_url, {
-      serverSelectionTimeoutMS: 15000,
-      bufferCommands: false,
-    });
+    await connectDatabase();
     console.log('MongoDB connected');
 
     return app.listen(config.port, () => {
