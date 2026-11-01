@@ -4,6 +4,7 @@ const router = express.Router();
 
 
 router.route('/').get(projectController.getProject)
+router.route("/all").get(projectController.getAllProjects)
 router.route("/").post(projectController.createProject)
 router.route("/:id").get(projectController.singleProject)
 router.route('/:id').patch(projectController.updateProject)

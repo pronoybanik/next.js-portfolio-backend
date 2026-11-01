@@ -30,6 +30,15 @@ const projectSchema = new Schema({
         type: String,
         required: true,
     },
+    isActive: {
+        type: Boolean,
+        default: true,
+    },
+    displayOrder: {
+        type: Number,
+        default: 0,
+        min: 0,
+    },
 }, { timestamps: true });
 
 

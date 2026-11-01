@@ -7,15 +7,28 @@ import projectRoute from './modules/projects/project.route';
 import authRoutes from './modules/users/user.route';
 import blogRoutes from './modules/blogs/blog.route';
 import contactRoutes from './modules/contact/contact.route';
+import portfolioRoutes from './modules/portfolio/portfolio.route';
 
 const app = express();
 
 app.use(express.json());
 app.use(cors());
+
+// app.use(
+//   cors({
+//     origin: [
+//       "http://localhost:3000",
+//       "http://localhost:3001",
+//     ],
+//     credentials: true,
+//   })
+// );
+
 app.use('/api/project', projectRoute);
 app.use('/api/auth', authRoutes);
 app.use('/api/blogs', blogRoutes);
 app.use('/api/contact', contactRoutes);
+app.use('/api/portfolio', portfolioRoutes);
 
 app.get('/', (_req, res) => {
   res.status(200).json({ message: 'Welcome to the portfolio server 5000' });

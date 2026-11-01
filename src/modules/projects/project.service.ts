@@ -7,8 +7,14 @@ const createProjectService = async (data: TProject) => {
 };
 
 const getProjectService = async () => {
-  const result = await Project.find({});
+  const result = await Project.find({
+    $or: [{ isActive: true }, { isActive: { $exists: false } }],
+  }).sort({ displayOrder: 1, createdAt: -1 });
   return result;
+};
+
+const getAllProjectService = async () => {
+  return Project.find({}).sort({ displayOrder: 1, createdAt: -1 });
 };
 
 const deleteProjectService = async (id: string) => {
@@ -35,4 +41,5 @@ export const projectService = {
   deleteProjectService,
   updateProjectByIdService,
   singleProjectService,
+  getAllProjectService,
 };

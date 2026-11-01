@@ -36,6 +36,15 @@ const getProject = async (req: Request, res: Response, next: NextFunction): Prom
     }
 };
 
+const getAllProjects = async (_req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+        const projects = await projectService.getAllProjectService();
+        res.status(200).json({ status: "success", data: projects });
+    } catch (error) {
+        next(error);
+    }
+};
+
 const updateProject = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
         const { id } = req.params;
@@ -126,4 +135,5 @@ export const projectController = {
     updateProject,
     deleteProject,
     singleProject
+    ,getAllProjects
 };

@@ -6,4 +6,6 @@ export type TProject = {
     frontEndGitLink: string;
     backEndGitLink: string;
     liveLink: string;
+    isActive?: boolean;
+    displayOrder?: number;
 }
