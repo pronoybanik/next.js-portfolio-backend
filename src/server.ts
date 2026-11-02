@@ -19,6 +19,7 @@ app.use(
       "http://localhost:3000",
       "http://localhost:3001",
       "https://www.pronoybanik.me",
+      "https://next-js-portfolio-frontend-murex.vercel.app",
       "https://nextjs-portfolio-dashboard.vercel.app"
     ],
     credentials: true,
