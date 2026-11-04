@@ -33,6 +33,12 @@ const connectDatabase = async (): Promise<typeof mongoose> => {
     return mongoose;
   }
 
+  if (!config.dataBase_url) {
+    throw new Error(
+      'DATABASE_URL is missing. Add it to Vercel Project Settings > Environment Variables.',
+    );
+  }
+
   if (!databaseConnection) {
     databaseConnection = mongoose
       .connect(config.dataBase_url, {
@@ -51,7 +57,12 @@ const connectDatabase = async (): Promise<typeof mongoose> => {
 };
 
 if (process.env.VERCEL) {
-  app.use(async (_req, _res, next) => {
+  app.use(async (req, _res, next) => {
+    if (req.path === '/') {
+      next();
+      return;
+    }
+
     try {
       await connectDatabase();
       next();

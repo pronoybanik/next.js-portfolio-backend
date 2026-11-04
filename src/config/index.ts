@@ -5,12 +5,6 @@ dotenv.config({ path: path.resolve(process.cwd(), '.env') });
 
 const dataBaseUrl = process.env.DATABASE_URL?.trim();
 
-if (!dataBaseUrl) {
-  throw new Error(
-    'DATABASE_URL is missing. Add a valid MongoDB connection string to the backend .env file.',
-  );
-}
-
 const mongodbDnsServers = (process.env.MONGODB_DNS_SERVERS || '')
   .split(',')
   .map((server) => server.trim())
