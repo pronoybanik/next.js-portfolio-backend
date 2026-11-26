@@ -4,7 +4,7 @@ import { IContact } from "./contact.interface";
 
 const ContactSchema = new Schema<IContact>({
     firstName: { type: String, required: true },
-    lastName: { type: String, required: true },
+    lastName: { type: String, default: "" },
     email: { type: String, required: true },
     phone: { type: String, required: true },
     category: {

@@ -16,7 +16,11 @@ export const createContact = async (req: Request, res: Response, next: NextFunct
       data: contact,
     });
   } catch (error) {
-    next(error);
+    console.error('Unable to submit contact request:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Unable to send your message right now. Please email me directly at pronoybanik82@gmail.com.',
+    });
   }
 };
 

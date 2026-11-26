@@ -2,12 +2,27 @@ import { Contact } from './contact.module';
 import { createTransporter, generateMailOptions } from './emailSender';
 
 type ContactInput = {
-  firstName: string; lastName: string; email: string; phone: number; category: string; message: string;
+  firstName: string;
+  lastName?: string;
+  email: string;
+  phone: number | string;
+  category?: string;
+  message: string;
 };
 
 export async function createContactService(data: ContactInput) {
-  await createTransporter().sendMail(generateMailOptions(data));
-  return Contact.create(data);
+  const normalizedData = {
+    ...data,
+    firstName: data.firstName.trim(),
+    lastName: data.lastName?.trim() || '',
+    email: data.email.trim(),
+    category: data.category?.trim() || 'General inquiry',
+    message: data.message.trim(),
+  };
+  const contact = new Contact(normalizedData);
+  await contact.validate();
+  await createTransporter().sendMail(generateMailOptions(normalizedData));
+  return contact.save();
 }
 
 export const getContactsService = () => Contact.find().sort({ createdAt: -1 });
