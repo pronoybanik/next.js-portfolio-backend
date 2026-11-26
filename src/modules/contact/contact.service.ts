@@ -1,5 +1,5 @@
 import { Contact } from './contact.module';
-import { createTransporter, generateMailOptions } from './emailSender';
+import { generateMailOptions, sendContactEmail } from './emailSender';
 
 type ContactInput = {
   firstName: string;
@@ -21,7 +21,7 @@ export async function createContactService(data: ContactInput) {
   };
   const contact = new Contact(normalizedData);
   await contact.validate();
-  await createTransporter().sendMail(generateMailOptions(normalizedData));
+  await sendContactEmail(generateMailOptions(normalizedData));
   return contact.save();
 }
 

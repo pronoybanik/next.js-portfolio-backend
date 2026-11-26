@@ -1,23 +1,4 @@
-import nodemailer from 'nodemailer';
-
-export const createTransporter = () => {
-  const { SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS } = process.env;
-  const port = Number(SMTP_PORT || 587);
-
-  if (!SMTP_HOST || !SMTP_USER || !SMTP_PASS || !Number.isInteger(port)) {
-    throw new Error('Email delivery is not configured. Check the SMTP environment variables.');
-  }
-
-  return nodemailer.createTransport({
-    host: SMTP_HOST,
-    port,
-    secure: port === 465,
-    auth: {
-      user: SMTP_USER,
-      pass: SMTP_PASS,
-    },
-  });
-};
+import { Resend } from 'resend';
 
 const escapeHtml = (value: string) =>
   value.replace(/[&<>"']/g, (character) => {
@@ -54,7 +35,6 @@ export const generateMailOptions = ({
   const safeMessage = escapeHtml(message).replace(/\r?\n/g, '<br/>');
 
   return {
-    from: `"Portfolio Contact Form" <${process.env.SMTP_USER}>`,
     to: process.env.RECEIVER_EMAIL || 'pronoybanik82@gmail.com',
     replyTo: email,
     subject: `New Contact Request - ${category || 'General inquiry'}`,
@@ -77,4 +57,22 @@ export const generateMailOptions = ({
       <p><strong>Message:</strong><br/>${safeMessage}</p>
     `,
   };
+};
+
+export const sendContactEmail = async (
+  mailOptions: ReturnType<typeof generateMailOptions>,
+) => {
+  const apiKey = process.env.RESEND_API_KEY?.trim();
+  const from = process.env.EMAIL_FROM?.trim();
+
+  if (!apiKey || !from) {
+    throw new Error('Email delivery is not configured. Set RESEND_API_KEY and EMAIL_FROM.');
+  }
+
+  const resend = new Resend(apiKey);
+  const { error } = await resend.emails.send({ ...mailOptions, from });
+
+  if (error) {
+    throw new Error(`Resend rejected the contact email: ${error.message}`);
+  }
 };
